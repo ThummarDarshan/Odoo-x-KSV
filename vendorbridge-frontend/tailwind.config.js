@@ -4,24 +4,32 @@ module.exports = {
     extend: {
       colors: {
         brand: { 
-          green: '#10b981', 
-          dark: '#059669',
-          glow: 'rgba(16, 185, 129, 0.15)',
+          green: 'var(--brand-primary)', 
+          dark: 'var(--brand-hover)',
+          glow: 'var(--brand-glow)',
         },
         surface: { 
-          base: '#0a0f0d', 
-          card: '#111917', 
-          elevated: '#1a2e25',
-          glass: 'rgba(26, 46, 37, 0.7)',
+          base: 'var(--bg-base)', 
+          card: 'var(--bg-surface)', 
+          elevated: 'var(--bg-elevated)',
+          glass: 'var(--bg-glass)',
         },
+        text: {
+          primary: 'var(--text-primary)',
+          secondary: 'var(--text-secondary)',
+          accent: 'var(--text-accent)',
+        },
+        subtle: 'var(--border-subtle)',
+        'border-green': 'var(--border-green)',
+        focus: 'var(--border-focus)',
       },
       fontFamily: {
         sans: ['Inter', 'system-ui', 'sans-serif'],
       },
       backdropBlur: { xs: '2px' },
       boxShadow: {
-        'glow': '0 0 20px rgba(16, 185, 129, 0.2)',
-        'card': '0 4px 24px rgba(0, 0, 0, 0.4)',
+        'glow': 'var(--shadow-glow)',
+        'card': 'var(--shadow-card)',
       }
     },
   },

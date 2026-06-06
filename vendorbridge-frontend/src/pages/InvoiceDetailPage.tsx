@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useParams, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
   Download, 
@@ -7,10 +7,7 @@ import {
   Mail, 
   Check, 
   AlertCircle,
-  FileText,
-  Loader2,
-  Building2,
-  DollarSign
+  Loader2
 } from 'lucide-react';
 import MainLayout from '../components/Layout/MainLayout';
 import api from '../lib/axios';
@@ -66,7 +63,6 @@ interface InvoiceDetail {
 
 export default function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();
-  const navigate = useNavigate();
   const { user } = useAuthStore();
 
   const [loading, setLoading] = useState(true);

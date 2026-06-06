@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { 
   ArrowLeft, 
@@ -6,7 +6,6 @@ import {
   AlertCircle, 
   Calendar, 
   DollarSign, 
-  Check, 
   Save, 
   Send,
   Loader2,
@@ -32,6 +31,7 @@ interface AssignedVendor {
   category: string;
   gst_number: string;
   contact_email: string;
+  contact_phone?: string;
   created_by: string;
   status: string;
   rating: string;
@@ -74,7 +74,7 @@ export default function SubmitQuotationPage() {
   const [gstPercentage, setGstPercentage] = useState<number>(18);
   const [paymentTerms, setPaymentTerms] = useState<string>('');
   const [notes, setNotes] = useState<string>('');
-  const [quotationId, setQuotationId] = useState<string | null>(null);
+  const [, setQuotationId] = useState<string | null>(null);
   const [quotationStatus, setQuotationStatus] = useState<string>('new'); // new, draft, submitted, selected, rejected
 
   // UI State
@@ -318,15 +318,15 @@ export default function SubmitQuotationPage() {
   // Status indicators for existing quotations
   const getStatusBadge = () => {
     if (quotationStatus === 'new') return null;
-    let classes = 'bg-gray-500/10 text-gray-400 border-white/5';
+    let classes = 'status-muted';
     if (quotationStatus === 'submitted') {
-      classes = 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+      classes = 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-500/10 dark:border-blue-500/20';
     } else if (quotationStatus === 'selected') {
-      classes = 'bg-emerald-500/10 text-brand-green border-brand-green/20';
+      classes = 'status-success';
     } else if (quotationStatus === 'rejected') {
-      classes = 'bg-red-500/10 text-red-400 border-red-500/20';
+      classes = 'status-danger';
     } else if (quotationStatus === 'draft') {
-      classes = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+      classes = 'status-warning';
     }
     return (
       <span className={`px-2.5 py-1 rounded-full text-xs font-semibold border capitalize ${classes}`}>

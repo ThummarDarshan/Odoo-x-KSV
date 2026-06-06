@@ -7,7 +7,7 @@ const router = Router();
 router.get(
   '/summary',
   authMiddleware,
-  requireRole('manager', 'admin'),
+  requireRole('manager', 'admin', 'procurement_officer'),
   rc.getSummary
 );
 

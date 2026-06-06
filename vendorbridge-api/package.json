@@ -9,6 +9,8 @@
     "typecheck": "tsc --noEmit",
     "start": "node dist/app.js",
     "migrate": "ts-node src/config/migrate.ts",
+    "db:clean": "ts-node src/config/clean.ts",
+    "db:reset": "ts-node src/config/clean.ts && ts-node src/config/migrate.ts",
     "test": "jest --runInBand --detectOpenHandles --forceExit"
   },
   "dependencies": {

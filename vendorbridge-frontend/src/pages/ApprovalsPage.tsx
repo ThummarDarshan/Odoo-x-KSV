@@ -1,13 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { useLocation, useNavigate, Link } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { 
   ArrowLeft, 
   CheckCircle2, 
   Clock, 
   XCircle, 
   AlertCircle,
-  Building2,
-  Calendar,
   MessageSquare,
   ThumbsUp,
   ThumbsDown,
@@ -268,7 +266,6 @@ export default function ApprovalsPage() {
     const l1 = chain.find(c => c.level === 1);
     const l2 = chain.find(c => c.level === 2);
 
-    const step1Completed = true; // submitted
     const step2Completed = l1?.status === 'approved';
     const step2Pending = l1?.status === 'pending';
     const step3Completed = l2?.status === 'approved';
@@ -393,7 +390,7 @@ export default function ApprovalsPage() {
                   
                   {/* Vertical chain list */}
                   <div className="space-y-4 relative before:absolute before:left-8 before:top-2 before:bottom-2 before:w-0.5 before:bg-white/5">
-                    {chain.map((record, index) => {
+                    {chain.map((record) => {
                       const isApproved = record.status === 'approved';
                       const isRejected = record.status === 'rejected';
                       const isPending = record.status === 'pending';

@@ -5,6 +5,7 @@ describe('Reports Endpoints', () => {
   const uniqueId = Date.now();
   let adminToken = '';
   let vendorToken = '';
+  let officerToken = '';
 
   beforeAll(async () => {
     // 1. Register/Login Admin
@@ -30,6 +31,18 @@ describe('Reports Endpoints', () => {
         role: 'vendor',
       });
     vendorToken = vendorReg.body.data.token;
+
+    // 3. Register/Login Procurement Officer
+    const officerReg = await request(app)
+      .post('/api/auth/register')
+      .send({
+        first_name: 'Officer',
+        last_name: 'Reports',
+        email: `officer.reports.${uniqueId}@example.com`,
+        password: 'securepassword123',
+        role: 'procurement_officer',
+      });
+    officerToken = officerReg.body.data.token;
   });
 
   it('should retrieve reports summary for admin/manager', async () => {
@@ -44,6 +57,15 @@ describe('Reports Endpoints', () => {
     expect(res.body.data.po_fulfillment_rate).toBeDefined();
     expect(res.body.data.overdue_invoices).toBeDefined();
     expect(res.body.data.month).toBeDefined();
+  });
+
+  it('should retrieve reports summary for procurement officer', async () => {
+    const res = await request(app)
+      .get('/api/reports/summary')
+      .set('Authorization', `Bearer ${officerToken}`);
+
+    expect(res.status).toBe(200);
+    expect(res.body.success).toBe(true);
   });
 
   it('should deny vendor from retrieving reports summary', async () => {

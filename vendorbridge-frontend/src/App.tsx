@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { QueryClientProvider, QueryClient } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from './store/auth.store';
+import { useThemeStore } from './store/theme.store';
 import LandingPage from './pages/LandingPage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
@@ -19,6 +20,8 @@ import ActivityPage from './pages/ActivityPage';
 import ReportsPage from './pages/ReportsPage';
 import RFQsPage from './pages/RFQsPage';
 import QuotationsPage from './pages/QuotationsPage';
+
+
 
 
 
@@ -51,6 +54,8 @@ const RFQDetailsRouteWrapper = () => {
 };
 
 export default function App() {
+  const { theme } = useThemeStore();
+
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
@@ -58,19 +63,29 @@ export default function App() {
           position="top-right" 
           toastOptions={{
             duration: 4000,
-            style: { 
-              background: '#111917', 
-              color: '#e2e8f0', 
+            style: theme === 'dark' ? { 
+              background: '#151f32', 
+              color: '#f8fafc', 
               border: '1px solid rgba(16, 185, 129, 0.2)',
               borderRadius: '8px',
               fontFamily: 'Inter, sans-serif',
               fontSize: '14px',
-            } 
+            } : {
+              background: '#ffffff', 
+              color: '#0f172a', 
+              border: '1px solid rgba(5, 150, 105, 0.2)',
+              borderRadius: '8px',
+              fontFamily: 'Inter, sans-serif',
+              fontSize: '14px',
+              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.08)'
+            }
           }} 
         />
         <Routes>
           {/* Public Landing Page */}
           <Route path="/" element={<PublicRoute><LandingPage /></PublicRoute>} />
+
+
 
           {/* Auth Routes */}
           <Route path="/login" element={<PublicRoute><LoginPage /></PublicRoute>} />

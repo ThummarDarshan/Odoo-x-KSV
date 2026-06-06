@@ -178,6 +178,15 @@ export async function runMigrations() {
     await query(alterSchemaSql);
     console.log('Database schema alterations executed successfully.');
 
+    // 4. Run seeds (if exists)
+    const seedPath = path.join(__dirname, '../../migrations/seed-demo-users.sql');
+    if (fs.existsSync(seedPath)) {
+      console.log(`Reading seed data from: ${seedPath}`);
+      const seedsSql = fs.readFileSync(seedPath, 'utf8');
+      await query(seedsSql);
+      console.log('Demo user seeds executed successfully.');
+    }
+
     console.log('All migrations completed successfully!');
   } catch (error) {
     console.error('Error running migrations:', error);

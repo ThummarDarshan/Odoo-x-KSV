@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/auth.store';
 import { Lock, Mail, ArrowRight, Eye, EyeOff, Loader2, CheckCircle2, Zap } from 'lucide-react';
+import ThemeToggle from '../components/ui/ThemeToggle';
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
 
@@ -54,6 +55,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-surface-base relative flex items-center justify-center p-6 md:p-12 overflow-hidden">
+      {/* Theme Toggle in top-right */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Background Ambient Spotlights */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-green/5 blur-[120px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-green/5 blur-[120px] pointer-events-none"></div>
@@ -65,9 +71,9 @@ export default function LoginPage() {
         <div className="lg:col-span-6 space-y-8 text-left hidden lg:block pr-8">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-brand-green rounded flex items-center justify-center shadow-glow">
-              <div className="w-3.5 h-3.5 bg-[#0a0f0d] rounded-sm"></div>
+              <div className="w-3.5 h-3.5 bg-surface-base rounded-sm"></div>
             </div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-white">
+            <h1 className="text-4xl font-extrabold tracking-tight text-text-primary">
               VendorBridge
             </h1>
           </div>
@@ -101,9 +107,9 @@ export default function LoginPage() {
             {/* Header info for mobile screens */}
             <div className="lg:hidden flex flex-col items-center mb-6">
               <div className="w-10 h-10 rounded bg-brand-green flex items-center justify-center shadow-glow mb-3">
-                <div className="w-3.5 h-3.5 bg-[#0a0f0d] rounded-sm"></div>
+                <div className="w-3.5 h-3.5 bg-surface-base rounded-sm"></div>
               </div>
-              <h2 className="text-xl font-bold text-white">VendorBridge</h2>
+              <h2 className="text-xl font-bold text-text-primary">VendorBridge</h2>
               <p className="text-text-secondary text-xs mt-1">Procurement & Vendor ERP</p>
             </div>
 

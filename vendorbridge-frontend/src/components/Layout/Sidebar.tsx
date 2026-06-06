@@ -1,7 +1,6 @@
 import { useLocation, Link, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, 
-  Users, 
   FileText, 
   ClipboardList, 
   CheckSquare, 
@@ -13,6 +12,7 @@ import {
   Building2,
 } from 'lucide-react';
 import { useAuthStore } from '../../store/auth.store';
+import ThemeToggle from '../ui/ThemeToggle';
 import toast from 'react-hot-toast';
 
 type NavItem = {
@@ -36,10 +36,10 @@ const ALL_NAV_ITEMS: NavItem[] = [
 
 // Role label colours for the badge
 const ROLE_BADGE: Record<string, { label: string; color: string }> = {
-  admin: { label: 'Admin', color: 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' },
-  procurement_officer: { label: 'Officer', color: 'text-blue-400 bg-blue-500/10 border-blue-500/20' },
-  manager: { label: 'Manager', color: 'text-amber-400 bg-amber-500/10 border-amber-500/20' },
-  vendor: { label: 'Vendor', color: 'text-violet-400 bg-violet-500/10 border-violet-500/20' },
+  admin: { label: 'Admin', color: 'status-success border' },
+  procurement_officer: { label: 'Officer', color: 'text-blue-600 bg-blue-50 border-blue-200 dark:text-blue-400 dark:bg-blue-500/10 dark:border-blue-500/20' },
+  manager: { label: 'Manager', color: 'status-warning border' },
+  vendor: { label: 'Vendor', color: 'text-violet-600 bg-violet-50 border-violet-200 dark:text-violet-400 dark:bg-violet-500/10 dark:border-violet-500/20' },
 };
 
 export default function Sidebar() {
@@ -75,7 +75,7 @@ export default function Sidebar() {
           <div className="w-8 h-8 rounded-lg bg-brand-green/10 flex items-center justify-center border border-brand-green/30 group-hover:border-brand-green/70 group-hover:shadow-glow transition-all duration-300">
             <div className="w-3.5 h-3.5 rounded-full bg-brand-green animate-pulse"></div>
           </div>
-          <span className="font-semibold text-lg tracking-wider text-white group-hover:text-brand-green transition-colors duration-200">
+          <span className="font-semibold text-lg tracking-wider text-text-primary group-hover:text-brand-green transition-colors duration-200">
             VendorBridge
           </span>
         </Link>
@@ -113,7 +113,7 @@ export default function Sidebar() {
       </nav>
 
       {/* User Session Info */}
-      <div className="p-4 border-t border-subtle bg-black/20">
+      <div className="p-4 border-t border-subtle bg-surface-elevated/30">
         <div className="flex items-center gap-3">
           {/* Avatar */}
           <div className="w-10 h-10 rounded-full bg-brand-green-glow flex items-center justify-center border border-brand-green/20 text-brand-green text-sm font-semibold shadow-glow shrink-0">
@@ -132,15 +132,18 @@ export default function Sidebar() {
             )}
           </div>
 
-          {/* Logout */}
-          <button
-            onClick={handleLogout}
-            className="p-2 rounded-lg text-text-secondary hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
-            title="Log Out"
-            id="sidebar-logout-btn"
-          >
-            <LogOut className="w-4 h-4" />
-          </button>
+          {/* Theme Toggle & Logout */}
+          <div className="flex items-center gap-1.5 shrink-0">
+            <ThemeToggle />
+            <button
+              onClick={handleLogout}
+              className="p-2 rounded-lg text-text-secondary hover:text-red-400 hover:bg-red-500/10 transition-all duration-200"
+              title="Log Out"
+              id="sidebar-logout-btn"
+            >
+              <LogOut className="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </div>
     </aside>

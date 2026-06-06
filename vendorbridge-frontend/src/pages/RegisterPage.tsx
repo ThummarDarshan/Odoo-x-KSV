@@ -5,6 +5,7 @@ import {
   Phone, FileText, Building2, Hash, MapPin, Briefcase
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
+import ThemeToggle from '../components/ui/ThemeToggle';
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
 
@@ -22,6 +23,63 @@ const CATEGORIES = [
   'Printing & Stationery',
   'Other Services',
 ];
+
+interface FieldProps {
+  label: string;
+  name: string;
+  type?: string;
+  placeholder: string;
+  required?: boolean;
+  icon: React.ElementType;
+  value: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  disabled?: boolean;
+  showPassword?: boolean;
+  setShowPassword?: (show: boolean) => void;
+}
+
+const Field = ({
+  label,
+  name,
+  type = 'text',
+  placeholder,
+  required = false,
+  icon: Icon,
+  value,
+  onChange,
+  disabled,
+  showPassword,
+  setShowPassword,
+}: FieldProps) => (
+  <div className="space-y-1.5">
+    <label className="text-xs font-semibold text-text-secondary uppercase tracking-wider block">
+      {label} {required && <span className="text-brand-green">*</span>}
+    </label>
+    <div className="relative">
+      <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary" />
+      <input
+        name={name}
+        type={type === 'password' && showPassword ? 'text' : type}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        className="input-field w-full pl-11 text-sm"
+        required={required}
+        disabled={disabled}
+      />
+      {type === 'password' && setShowPassword && (
+        <button
+          type="button"
+          onClick={() => setShowPassword(!showPassword)}
+          className="absolute right-4 top-1/2 -translate-y-1/2 text-text-secondary hover:text-text-primary"
+          tabIndex={-1}
+        >
+          {showPassword ? '👁' : '👁‍🗨'}
+        </button>
+      )}
+    </div>
+  </div>
+);
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -101,53 +159,14 @@ export default function RegisterPage() {
     }
   };
 
-  const Field = ({
-    label,
-    name,
-    type = 'text',
-    placeholder,
-    required = false,
-    icon: Icon,
-  }: {
-    label: string;
-    name: string;
-    type?: string;
-    placeholder: string;
-    required?: boolean;
-    icon: React.ElementType;
-  }) => (
-    <div className="space-y-1.5">
-      <label className="text-xs font-semibold text-[#94a3b8] uppercase tracking-wider block">
-        {label} {required && <span className="text-emerald-400">*</span>}
-      </label>
-      <div className="relative">
-        <Icon className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#94a3b8]" />
-        <input
-          name={name}
-          type={type === 'password' && showPassword ? 'text' : type}
-          placeholder={placeholder}
-          value={(form as any)[name]}
-          onChange={handleChange}
-          className="input-field w-full pl-11 text-sm"
-          required={required}
-          disabled={loading}
-        />
-        {type === 'password' && (
-          <button
-            type="button"
-            onClick={() => setShowPassword(!showPassword)}
-            className="absolute right-4 top-1/2 -translate-y-1/2 text-[#94a3b8] hover:text-white"
-            tabIndex={-1}
-          >
-            {showPassword ? '👁' : '👁‍🗨'}
-          </button>
-        )}
-      </div>
-    </div>
-  );
 
   return (
-    <div className="min-h-screen bg-[#0a0f0d] relative flex items-start justify-center p-6 py-12 overflow-y-auto">
+    <div className="min-h-screen bg-surface-base relative flex items-start justify-center p-6 py-12 overflow-y-auto">
+      {/* Theme Toggle in top-right */}
+      <div className="absolute top-6 right-6 z-50">
+        <ThemeToggle />
+      </div>
+
       {/* Background glows */}
       <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-emerald-500/5 blur-[120px] pointer-events-none"></div>
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-500/5 blur-[100px] pointer-events-none"></div>
@@ -159,9 +178,9 @@ export default function RegisterPage() {
             <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
               <div className="w-4 h-4 rounded-full bg-emerald-400 group-hover:animate-pulse"></div>
             </div>
-            <span className="font-bold text-xl text-white group-hover:text-emerald-400 transition-colors">VendorBridge</span>
+            <span className="font-bold text-xl text-text-primary group-hover:text-emerald-400 transition-colors">VendorBridge</span>
           </Link>
-          <h1 className="text-3xl font-extrabold text-white tracking-tight">Vendor Registration</h1>
+          <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">Vendor Registration</h1>
           <p className="text-[#94a3b8] text-sm mt-2">
             Register your company on VendorBridge. Your profile will be reviewed by our team before activation.
           </p>
@@ -173,7 +192,7 @@ export default function RegisterPage() {
         </div>
 
         {/* Form Card */}
-        <div className="bg-[rgba(17,25,23,0.65)] backdrop-blur-xl border border-emerald-500/15 rounded-2xl shadow-[0_4px_40px_rgba(0,0,0,0.5)] p-8">
+        <div className="glass-card rounded-2xl p-8 border border-emerald-500/15">
           <form onSubmit={handleSubmit} className="space-y-7">
 
             {/* ── Section 1: Personal Information ── */}
@@ -183,12 +202,73 @@ export default function RegisterPage() {
                 <h2 className="text-sm font-bold text-white uppercase tracking-wider">Personal Information</h2>
               </div>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <Field label="First Name" name="first_name" placeholder="First name" required icon={UserIcon} />
-                <Field label="Last Name" name="last_name" placeholder="Last name" required icon={UserIcon} />
-                <Field label="Email Address" name="email" type="email" placeholder="your@email.com" required icon={Mail} />
-                <Field label="Mobile Phone" name="phone" type="tel" placeholder="+91 XXXXX XXXXX" icon={Phone} />
-                <Field label="Password" name="password" type="password" placeholder="Min. 8 characters" required icon={Lock} />
-                <Field label="Confirm Password" name="confirm_password" type="password" placeholder="Re-enter password" required icon={Lock} />
+                <Field 
+                  label="First Name" 
+                  name="first_name" 
+                  placeholder="First name" 
+                  required 
+                  icon={UserIcon} 
+                  value={form.first_name}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+                <Field 
+                  label="Last Name" 
+                  name="last_name" 
+                  placeholder="Last name" 
+                  required 
+                  icon={UserIcon} 
+                  value={form.last_name}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+                <Field 
+                  label="Email Address" 
+                  name="email" 
+                  type="email" 
+                  placeholder="your@email.com" 
+                  required 
+                  icon={Mail} 
+                  value={form.email}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+                <Field 
+                  label="Mobile Phone" 
+                  name="phone" 
+                  type="tel" 
+                  placeholder="+91 XXXXX XXXXX" 
+                  icon={Phone} 
+                  value={form.phone}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+                <Field 
+                  label="Password" 
+                  name="password" 
+                  type="password" 
+                  placeholder="Min. 8 characters" 
+                  required 
+                  icon={Lock} 
+                  value={form.password}
+                  onChange={handleChange}
+                  disabled={loading}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                />
+                <Field 
+                  label="Confirm Password" 
+                  name="confirm_password" 
+                  type="password" 
+                  placeholder="Re-enter password" 
+                  required 
+                  icon={Lock} 
+                  value={form.confirm_password}
+                  onChange={handleChange}
+                  disabled={loading}
+                  showPassword={showPassword}
+                  setShowPassword={setShowPassword}
+                />
               </div>
             </div>
 

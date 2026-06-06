@@ -9,7 +9,7 @@ INSERT INTO users (first_name, last_name, email, password_hash, role, country, i
 VALUES (
   'System', 'Admin',
   'admin@vendorbridge.com',
-  '$2a$12$Za1Ar1ooLnwt3bAO6G/kY.fp7w9T1DUihU8Jld1UVqoE3Pn17/2iO',
+  '$2a$12$9cVRkVEfg2W.5YgQN7UpY.sMrmVI3DKZClfZCwOoejBF2o8zoeddm',
   'admin', 'India', true
 )
 ON CONFLICT (email) DO NOTHING;
@@ -19,7 +19,7 @@ INSERT INTO users (first_name, last_name, email, password_hash, role, country, i
 VALUES (
   'Priya', 'Sharma',
   'officer@vendorbridge.com',
-  '$2a$12$Za1Ar1ooLnwt3bAO6G/kY.fp7w9T1DUihU8Jld1UVqoE3Pn17/2iO',
+  '$2a$12$9cVRkVEfg2W.5YgQN7UpY.sMrmVI3DKZClfZCwOoejBF2o8zoeddm',
   'procurement_officer', 'India', true
 )
 ON CONFLICT (email) DO NOTHING;
@@ -29,7 +29,7 @@ INSERT INTO users (first_name, last_name, email, password_hash, role, country, i
 VALUES (
   'Raj', 'Patel',
   'manager@vendorbridge.com',
-  '$2a$12$Za1Ar1ooLnwt3bAO6G/kY.fp7w9T1DUihU8Jld1UVqoE3Pn17/2iO',
+  '$2a$12$9cVRkVEfg2W.5YgQN7UpY.sMrmVI3DKZClfZCwOoejBF2o8zoeddm',
   'manager', 'India', true
 )
 ON CONFLICT (email) DO NOTHING;

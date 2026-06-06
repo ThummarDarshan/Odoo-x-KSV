@@ -13,6 +13,7 @@ import {
   ChevronRight,
   Star,
 } from 'lucide-react';
+import ThemeToggle from '../components/ui/ThemeToggle';
 
 const FEATURES = [
   {
@@ -105,25 +106,26 @@ const STATS = [
 
 export default function LandingPage() {
   return (
-    <div className="min-h-screen bg-[#0a0f0d] text-[#e2e8f0] font-['Inter',sans-serif] overflow-x-hidden">
+    <div className="min-h-screen bg-surface-base text-text-primary font-['Inter',sans-serif] overflow-x-hidden">
 
       {/* ===== NAVBAR ===== */}
-      <header className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-12 bg-[#0a0f0d]/80 backdrop-blur-md border-b border-white/5">
+      <header className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-12 header-glass">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30">
             <div className="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-pulse"></div>
           </div>
-          <span className="font-bold text-lg tracking-tight text-white">VendorBridge</span>
+          <span className="font-bold text-lg tracking-tight text-text-primary">VendorBridge</span>
         </div>
-        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-[#94a3b8]">
-          <a href="#features" className="hover:text-white transition-colors">Features</a>
-          <a href="#workflow" className="hover:text-white transition-colors">How It Works</a>
-          <a href="#testimonials" className="hover:text-white transition-colors">Testimonials</a>
+        <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-text-secondary">
+          <a href="#features" className="hover:text-text-primary transition-colors">Features</a>
+          <a href="#workflow" className="hover:text-text-primary transition-colors">How It Works</a>
+          <a href="#testimonials" className="hover:text-text-primary transition-colors">Testimonials</a>
         </nav>
         <div className="flex items-center gap-3">
+          <ThemeToggle />
           <Link
             to="/login"
-            className="text-sm font-semibold text-[#94a3b8] hover:text-white px-4 py-2 rounded-lg hover:bg-white/5 transition-all"
+            className="text-sm font-semibold text-text-secondary hover:text-text-primary px-4 py-2 rounded-lg hover:bg-white/5 transition-all"
           >
             Sign In
           </Link>
@@ -243,19 +245,19 @@ export default function LandingPage() {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 max-w-6xl mx-auto">
           {[
-            { role: 'Admin', color: 'emerald', desc: 'Manages vendors, monitors entire platform, approves registrations', icon: Shield },
-            { role: 'Procurement Officer', color: 'blue', desc: 'Creates RFQs, invites vendors, compares quotations', icon: FileText },
-            { role: 'Manager', color: 'amber', desc: 'Reviews and approves purchase decisions and workflows', icon: CheckCircle2 },
-            { role: 'Vendor', color: 'violet', desc: 'Receives RFQs, submits competitive quotes, tracks orders', icon: Users },
+            { role: 'Admin', color: 'emerald', textClass: 'text-emerald-600 dark:text-emerald-400', borderClass: 'border-emerald-500/30 dark:border-emerald-500/20', bgClass: 'bg-emerald-500/10', hoverClass: 'hover:bg-emerald-500/5 dark:hover:bg-emerald-500/10', desc: 'Manages vendors, monitors entire platform, approves registrations', icon: Shield },
+            { role: 'Procurement Officer', color: 'blue', textClass: 'text-blue-600 dark:text-blue-400', borderClass: 'border-blue-500/30 dark:border-blue-500/20', bgClass: 'bg-blue-500/10', hoverClass: 'hover:bg-blue-500/5 dark:hover:bg-blue-500/10', desc: 'Creates RFQs, invites vendors, compares quotations', icon: FileText },
+            { role: 'Manager', color: 'amber', textClass: 'text-amber-600 dark:text-amber-400', borderClass: 'border-amber-500/30 dark:border-amber-500/20', bgClass: 'bg-amber-500/10', hoverClass: 'hover:bg-amber-500/5 dark:hover:bg-amber-500/10', desc: 'Reviews and approves purchase decisions and workflows', icon: CheckCircle2 },
+            { role: 'Vendor', color: 'violet', textClass: 'text-violet-600 dark:text-violet-400', borderClass: 'border-violet-500/30 dark:border-violet-500/20', bgClass: 'bg-violet-500/10', hoverClass: 'hover:bg-violet-500/5 dark:hover:bg-violet-500/10', desc: 'Receives RFQs, submits competitive quotes, tracks orders', icon: Users },
           ].map((r) => {
             const Icon = r.icon;
             return (
-              <div key={r.role} className={`bg-white/[0.03] border border-${r.color}-500/20 rounded-2xl p-6 text-center hover:bg-${r.color}-500/5 transition-all duration-300`}>
-                <div className={`w-12 h-12 rounded-full bg-${r.color}-500/10 border border-${r.color}-500/20 flex items-center justify-center mx-auto mb-4`}>
-                  <Icon className={`w-6 h-6 text-${r.color}-400`} />
+              <div key={r.role} className={`glass-card rounded-2xl p-6 text-center ${r.hoverClass}`}>
+                <div className={`w-12 h-12 rounded-full ${r.bgClass} border ${r.borderClass} flex items-center justify-center mx-auto mb-4`}>
+                  <Icon className={`w-6 h-6 ${r.textClass}`} />
                 </div>
-                <h3 className="font-bold text-white text-base mb-2">{r.role}</h3>
-                <p className="text-xs text-[#94a3b8] leading-relaxed">{r.desc}</p>
+                <h3 className="font-bold text-text-primary text-base mb-2">{r.role}</h3>
+                <p className="text-xs text-text-secondary leading-relaxed">{r.desc}</p>
               </div>
             );
           })}
