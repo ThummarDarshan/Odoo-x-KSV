@@ -6,9 +6,9 @@ import api from '../lib/axios';
 import toast from 'react-hot-toast';
 
 const DEMO_ACCOUNTS = [
-  { role: 'Admin', email: 'admin@vendorbridge.com', password: 'Demo@1234', color: 'emerald', desc: 'Full system access' },
-  { role: 'Officer', email: 'officer@vendorbridge.com', password: 'Demo@1234', color: 'blue', desc: 'RFQ & Quotations' },
-  { role: 'Manager', email: 'manager@vendorbridge.com', password: 'Demo@1234', color: 'amber', desc: 'Approval workflows' },
+  { role: 'Admin', email: 'admin@vendorbridge.com', password: 'VendorBridge@2026', color: 'emerald', desc: 'Full system access' },
+  { role: 'Officer', email: 'officer@vendorbridge.com', password: 'VendorBridge@2026', color: 'blue', desc: 'RFQ & Quotations' },
+  { role: 'Manager', email: 'manager@vendorbridge.com', password: 'VendorBridge@2026', color: 'amber', desc: 'Approval workflows' },
 ];
 
 export default function LoginPage() {
