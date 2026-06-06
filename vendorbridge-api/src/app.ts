@@ -1,9 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import authRoutes from './routes/auth.routes';
-import vendorRoutes from './routes/vendor.routes';
-import rfqRoutes from './routes/rfq.routes';
+import apiRouter from './routes';
 import { errorHandler } from './middleware/errorHandler';
 
 dotenv.config();
@@ -25,9 +23,7 @@ app.get('/health', (_, res) =>
   res.json({ status: 'ok', timestamp: new Date().toISOString() })
 );
 
-app.use('/api/auth', authRoutes);
-app.use('/api/vendors', vendorRoutes);
-app.use('/api/rfqs', rfqRoutes);
+app.use('/api', apiRouter);
 
 app.use(errorHandler);
 
