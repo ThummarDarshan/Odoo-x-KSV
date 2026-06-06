@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../../store/auth.store';
 import ThemeToggle from '../ui/ThemeToggle';
+import Logo from '../ui/Logo';
 import toast from 'react-hot-toast';
 
 type NavItem = {
@@ -71,14 +72,7 @@ export default function Sidebar() {
     <aside className="fixed top-0 left-0 h-screen w-60 bg-surface-card border-r border-subtle flex flex-col z-30">
       {/* Top Brand Logo */}
       <div className="h-20 flex items-center px-6 border-b border-subtle">
-        <Link to="/dashboard" className="flex items-center gap-3 group">
-          <div className="w-8 h-8 rounded-lg bg-brand-green/10 flex items-center justify-center border border-brand-green/30 group-hover:border-brand-green/70 group-hover:shadow-glow transition-all duration-300">
-            <div className="w-3.5 h-3.5 rounded-full bg-brand-green animate-pulse"></div>
-          </div>
-          <span className="font-semibold text-lg tracking-wider text-text-primary group-hover:text-brand-green transition-colors duration-200">
-            VendorBridge
-          </span>
-        </Link>
+        <Logo size="md" linkTo="/dashboard" />
       </div>
 
       {/* Navigation Links */}

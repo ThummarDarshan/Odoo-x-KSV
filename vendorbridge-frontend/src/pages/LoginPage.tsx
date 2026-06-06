@@ -3,6 +3,7 @@ import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/auth.store';
 import { Lock, Mail, ArrowRight, Eye, EyeOff, Loader2, CheckCircle2, Zap } from 'lucide-react';
 import ThemeToggle from '../components/ui/ThemeToggle';
+import Logo from '../components/ui/Logo';
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
 
@@ -70,12 +71,10 @@ export default function LoginPage() {
         
         {/* LEFT PANEL: Branding & Bullet features */}
         <div className="lg:col-span-6 space-y-8 text-left hidden lg:block pr-8">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-brand-green rounded flex items-center justify-center shadow-glow">
-              <div className="w-3.5 h-3.5 bg-surface-base rounded-sm"></div>
-            </div>
-            <h1 className="text-4xl font-extrabold tracking-tight text-text-primary">
-              VendorBridge
+          <div className="flex items-center gap-4 group">
+            <Logo iconOnly size="lg" linkTo="/" />
+            <h1 className="text-4xl font-extrabold tracking-tight text-text-primary group-hover:text-brand-green transition-colors duration-200">
+              Vendor<span className="text-brand-green">Bridge</span>
             </h1>
           </div>
 
@@ -106,11 +105,11 @@ export default function LoginPage() {
         <div className="lg:col-span-6 flex justify-center w-full">
           <div className="w-full max-w-md glass-card rounded-2xl p-8 border border-brand-green/20">
             {/* Header info for mobile screens */}
-            <div className="lg:hidden flex flex-col items-center mb-6">
-              <div className="w-10 h-10 rounded bg-brand-green flex items-center justify-center shadow-glow mb-3">
-                <div className="w-3.5 h-3.5 bg-surface-base rounded-sm"></div>
-              </div>
-              <h2 className="text-xl font-bold text-text-primary">VendorBridge</h2>
+            <div className="lg:hidden flex flex-col items-center mb-6 text-center">
+              <Logo iconOnly size="lg" linkTo="/" className="mb-2" />
+              <h2 className="text-xl font-bold text-text-primary">
+                Vendor<span className="text-brand-green">Bridge</span>
+              </h2>
               <p className="text-text-secondary text-xs mt-1">Procurement & Vendor ERP</p>
             </div>
 

@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../store/auth.store';
 import ThemeToggle from '../components/ui/ThemeToggle';
+import Logo from '../components/ui/Logo';
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
 
@@ -174,12 +175,7 @@ export default function RegisterPage() {
       <div className="w-full max-w-2xl relative z-10">
         {/* Header */}
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2.5 group mb-6">
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
-              <div className="w-4 h-4 rounded-full bg-emerald-400 group-hover:animate-pulse"></div>
-            </div>
-            <span className="font-bold text-xl text-text-primary group-hover:text-emerald-400 transition-colors">VendorBridge</span>
-          </Link>
+          <Logo size="lg" linkTo="/" className="justify-center mb-6" />
           <h1 className="text-3xl font-extrabold text-text-primary tracking-tight">Vendor Registration</h1>
           <p className="text-[#94a3b8] text-sm mt-2">
             Register your company on VendorBridge. Your profile will be reviewed by our team before activation.

@@ -14,6 +14,7 @@ import {
   Star,
 } from 'lucide-react';
 import ThemeToggle from '../components/ui/ThemeToggle';
+import Logo from '../components/ui/Logo';
 
 const FEATURES = [
   {
@@ -110,12 +111,7 @@ export default function LandingPage() {
 
       {/* ===== NAVBAR ===== */}
       <header className="fixed top-0 left-0 right-0 z-50 h-16 flex items-center justify-between px-6 md:px-12 header-glass">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center border border-emerald-500/30">
-            <div className="w-3.5 h-3.5 rounded-full bg-emerald-400 animate-pulse"></div>
-          </div>
-          <span className="font-bold text-lg tracking-tight text-text-primary">VendorBridge</span>
-        </div>
+        <Logo size="md" linkTo="/" />
         <nav className="hidden md:flex items-center gap-8 text-sm font-medium text-text-secondary">
           <a href="#features" className="hover:text-text-primary transition-colors">Features</a>
           <a href="#workflow" className="hover:text-text-primary transition-colors">How It Works</a>
@@ -363,12 +359,7 @@ export default function LandingPage() {
 
       {/* ===== FOOTER ===== */}
       <footer className="py-10 px-6 border-t border-white/5 text-center">
-        <div className="flex items-center justify-center gap-2 mb-3">
-          <div className="w-6 h-6 rounded-md bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center">
-            <div className="w-2.5 h-2.5 rounded-full bg-emerald-400"></div>
-          </div>
-          <span className="font-bold text-white">VendorBridge</span>
-        </div>
+        <Logo size="sm" linkTo="/" className="justify-center mb-3" />
         <p className="text-xs text-[#94a3b8]">
           © 2026 VendorBridge Procurement ERP · Built for the Odoo × KSV Hackathon
         </p>
