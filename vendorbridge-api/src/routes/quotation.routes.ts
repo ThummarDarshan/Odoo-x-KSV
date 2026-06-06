@@ -8,7 +8,7 @@ const router = Router();
 router.get(
   '/',
   authMiddleware,
-  requireRole('procurement_officer', 'admin', 'manager'),
+  requireRole('procurement_officer', 'admin', 'manager', 'vendor'),
   qc.getQuotations
 );
 

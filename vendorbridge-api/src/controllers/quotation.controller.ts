@@ -40,16 +40,24 @@ export const getQuotations = async (req: Request, res: Response, next: NextFunct
     }
 
     // Fetch all quotations for the given RFQ
-    const quotationsResult = await query(
-      `SELECT q.*, 
+    let queryText = `
+       SELECT q.*, 
               v.name AS vendor_name, 
               v.rating AS vendor_rating
        FROM quotations q
        JOIN vendors v ON q.vendor_id = v.id
        WHERE q.rfq_id = $1
-       ORDER BY q.created_at DESC`,
-      [rfq_id]
-    );
+    `;
+    const params = [rfq_id];
+
+    if (req.user?.role === 'vendor') {
+      queryText += ` AND (v.created_by = $2 OR v.contact_email = $3)`;
+      params.push(req.user.userId);
+      params.push(req.user.email);
+    }
+
+    queryText += ` ORDER BY q.created_at DESC`;
+    const quotationsResult = await query(queryText, params);
 
     const quotations = quotationsResult.rows;
 
