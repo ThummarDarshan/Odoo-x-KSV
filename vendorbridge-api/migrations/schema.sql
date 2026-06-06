@@ -115,35 +115,39 @@ CREATE TABLE IF NOT EXISTS quotation_line_items (
 CREATE TABLE IF NOT EXISTS approvals (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   quotation_id UUID REFERENCES quotations(id) ON DELETE CASCADE NOT NULL,
-  rfq_id UUID REFERENCES rfqs(id),
-  vendor_id UUID REFERENCES vendors(id),
-  approver_id UUID REFERENCES users(id),
-  approver_role VARCHAR(50),
+  rfq_id UUID REFERENCES rfqs(id) NOT NULL,
+  vendor_id UUID REFERENCES vendors(id) NOT NULL,
+  level INTEGER NOT NULL DEFAULT 1,
+  approver_id UUID REFERENCES users(id) NOT NULL,
+  approver_name VARCHAR(200) NOT NULL,
+  approver_role VARCHAR(100) NOT NULL,
   status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
   remarks TEXT,
-  decided_at TIMESTAMPTZ,
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  actioned_at TIMESTAMPTZ,
+  assigned_at TIMESTAMPTZ DEFAULT NOW(),
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- PURCHASE ORDERS
 CREATE TABLE IF NOT EXISTS purchase_orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   po_number VARCHAR(50) UNIQUE NOT NULL,
-  quotation_id UUID REFERENCES quotations(id),
-  rfq_id UUID REFERENCES rfqs(id),
+  rfq_id UUID REFERENCES rfqs(id) NOT NULL,
+  quotation_id UUID REFERENCES quotations(id) NOT NULL,
   vendor_id UUID REFERENCES vendors(id) NOT NULL,
+  bill_to_name VARCHAR(255),
+  bill_to_address TEXT,
+  bill_to_gstin VARCHAR(50),
+  subtotal DECIMAL(14,2) NOT NULL,
+  cgst_percentage DECIMAL(5,2) DEFAULT 9.00,
+  cgst_amount DECIMAL(14,2) NOT NULL,
+  sgst_percentage DECIMAL(5,2) DEFAULT 9.00,
+  sgst_amount DECIMAL(14,2) NOT NULL,
+  grand_total DECIMAL(14,2) NOT NULL,
   status VARCHAR(30) NOT NULL DEFAULT 'generated' CHECK (status IN ('generated', 'sent', 'acknowledged', 'completed', 'cancelled')),
-  subtotal DECIMAL(14,2) DEFAULT 0.00,
-  gst_percentage DECIMAL(5,2) DEFAULT 18.00,
-  gst_amount DECIMAL(14,2) DEFAULT 0.00,
-  grand_total DECIMAL(14,2) DEFAULT 0.00,
-  delivery_days INTEGER,
-  payment_terms VARCHAR(150),
-  notes TEXT,
+  po_date DATE NOT NULL DEFAULT CURRENT_DATE,
   created_by UUID REFERENCES users(id),
-  created_at TIMESTAMPTZ DEFAULT NOW(),
-  updated_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
 -- INVOICES
@@ -152,12 +156,15 @@ CREATE TABLE IF NOT EXISTS invoices (
   invoice_number VARCHAR(50) UNIQUE NOT NULL,
   po_id UUID REFERENCES purchase_orders(id) ON DELETE CASCADE NOT NULL,
   vendor_id UUID REFERENCES vendors(id) NOT NULL,
-  status VARCHAR(30) NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'paid', 'overdue', 'cancelled')),
-  subtotal DECIMAL(14,2) DEFAULT 0.00,
-  gst_percentage DECIMAL(5,2) DEFAULT 18.00,
-  gst_amount DECIMAL(14,2) DEFAULT 0.00,
-  grand_total DECIMAL(14,2) DEFAULT 0.00,
-  due_date DATE,
+  vendor_address TEXT,
+  vendor_gstin VARCHAR(50),
+  invoice_date DATE NOT NULL DEFAULT CURRENT_DATE,
+  due_date DATE NOT NULL,
+  subtotal DECIMAL(14,2) NOT NULL,
+  cgst_amount DECIMAL(14,2) NOT NULL,
+  sgst_amount DECIMAL(14,2) NOT NULL,
+  grand_total DECIMAL(14,2) NOT NULL,
+  status VARCHAR(30) NOT NULL DEFAULT 'pending_payment' CHECK (status IN ('pending_payment', 'paid', 'overdue', 'cancelled')),
   paid_at TIMESTAMPTZ,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -166,13 +173,14 @@ CREATE TABLE IF NOT EXISTS invoices (
 -- ACTIVITY LOGS
 CREATE TABLE IF NOT EXISTS activity_logs (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  event_type VARCHAR(50) NOT NULL,
-  action VARCHAR(150) NOT NULL,
-  description TEXT,
+  event_type VARCHAR(50) NOT NULL CHECK (event_type IN ('rfq', 'approval', 'invoice', 'vendor', 'quotation', 'po')),
+  action VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
   performed_by UUID REFERENCES users(id),
-  performed_by_name VARCHAR(255),
+  performed_by_name VARCHAR(200),
   resource_id UUID,
   resource_type VARCHAR(50),
+  meta JSONB,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 

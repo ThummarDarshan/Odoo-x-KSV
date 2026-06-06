@@ -12,10 +12,8 @@ import {
   AlertTriangle,
   XCircle,
   Building2,
-  IndianRupee,
 } from 'lucide-react';
 import MainLayout from '../components/Layout/MainLayout';
-import { useAuthStore } from '../store/auth.store';
 import api from '../lib/axios';
 
 interface Invoice {
@@ -44,11 +42,6 @@ const STATUS_ICONS: Record<string, React.ElementType> = {
   cancelled: XCircle,
 };
 
-const mockInvoices: Invoice[] = [
-  { id: 'inv1', invoice_number: 'INV-2026-0001', po_number: 'PO-2026-0001', vendor_name: 'TechMart Solutions', invoice_date: '2026-06-01T08:00:00Z', due_date: '2026-07-01T08:00:00Z', grand_total: '171100', status: 'pending_payment', paid_at: null },
-  { id: 'inv2', invoice_number: 'INV-2026-0002', po_number: 'PO-2026-0002', vendor_name: 'Apex Supplies Ltd', invoice_date: '2026-06-03T11:00:00Z', due_date: '2026-07-03T11:00:00Z', grand_total: '281430', status: 'paid', paid_at: '2026-06-20T10:00:00Z' },
-  { id: 'inv3', invoice_number: 'INV-2026-0003', po_number: 'PO-2026-0003', vendor_name: 'GreenBridge Logistics', invoice_date: '2026-05-25T14:00:00Z', due_date: '2026-06-04T14:00:00Z', grand_total: '61360', status: 'overdue', paid_at: null },
-];
 
 const formatCurrency = (val: number | string) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(val));
@@ -67,7 +60,6 @@ const StatusBadge = ({ status }: { status: string }) => {
 };
 
 export default function InvoicesPage() {
-  const { user } = useAuthStore();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -78,7 +70,7 @@ export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [, setIsError] = useState(false);
 
   useEffect(() => {
     async function loadInvoices() {
@@ -105,26 +97,17 @@ export default function InvoicesPage() {
     loadInvoices();
   }, [statusFilter, page]);
 
-  const displayInvoices = isError || (!loading && invoices.length === 0)
-    ? mockInvoices.filter(inv => {
-        const matchSearch = !searchQuery ||
-          inv.invoice_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          inv.po_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          inv.vendor_name.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchStatus = statusFilter === 'all' || inv.status === statusFilter;
-        return matchSearch && matchStatus;
-      })
-    : invoices.filter(inv =>
-        !searchQuery ||
-        inv.invoice_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inv.po_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        inv.vendor_name.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const displayInvoices = invoices.filter(inv =>
+    !searchQuery ||
+    inv.invoice_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    inv.po_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    inv.vendor_name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const totalPages = Math.ceil((isError ? displayInvoices.length : total) / limit) || 1;
+  const totalPages = Math.ceil(total / limit) || 1;
 
   const summaryStats = [
-    { label: 'Total Invoices', value: isError ? mockInvoices.length : total, icon: Receipt, color: 'text-blue-400' },
+    { label: 'Total Invoices', value: total, icon: Receipt, color: 'text-blue-400' },
     { label: 'Pending Payment', value: displayInvoices.filter(i => i.status === 'pending_payment').length, icon: Clock, color: 'text-amber-400' },
     { label: 'Overdue', value: displayInvoices.filter(i => i.status === 'overdue').length, icon: AlertTriangle, color: 'text-red-400' },
     { label: 'Paid', value: displayInvoices.filter(i => i.status === 'paid').length, icon: CheckCircle2, color: 'text-emerald-400' },

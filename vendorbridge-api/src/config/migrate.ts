@@ -133,6 +133,51 @@ export async function runMigrations() {
     `;
     await query(backendDev2Sql);
     console.log('Backend Dev 2 schemas executed successfully.');
+
+    // 3. Alter existing tables to add columns if they were created with old schema.sql
+    console.log('Running ALTER TABLE statements to align existing tables...');
+    const alterSchemaSql = `
+      -- Alter approvals
+      ALTER TABLE approvals ADD COLUMN IF NOT EXISTS level INTEGER NOT NULL DEFAULT 1;
+      ALTER TABLE approvals ADD COLUMN IF NOT EXISTS approver_name VARCHAR(200) NOT NULL DEFAULT 'System';
+      ALTER TABLE approvals ADD COLUMN IF NOT EXISTS actioned_at TIMESTAMPTZ;
+      ALTER TABLE approvals ADD COLUMN IF NOT EXISTS assigned_at TIMESTAMPTZ DEFAULT NOW();
+
+      -- Alter purchase_orders
+      ALTER TABLE purchase_orders ADD COLUMN IF NOT EXISTS bill_to_name VARCHAR(255);
+      ALTER TABLE purchase_orders ADD COLUMN IF NOT EXISTS bill_to_address TEXT;
+      ALTER TABLE purchase_orders ADD COLUMN IF NOT EXISTS bill_to_gstin VARCHAR(50);
+      ALTER TABLE purchase_orders ADD COLUMN IF NOT EXISTS cgst_percentage DECIMAL(5,2) DEFAULT 9.00;
+      ALTER TABLE purchase_orders ADD COLUMN IF NOT EXISTS cgst_amount DECIMAL(14,2) DEFAULT 0.00;
+      ALTER TABLE purchase_orders ADD COLUMN IF NOT EXISTS sgst_percentage DECIMAL(5,2) DEFAULT 9.00;
+      ALTER TABLE purchase_orders ADD COLUMN IF NOT EXISTS sgst_amount DECIMAL(14,2) DEFAULT 0.00;
+      ALTER TABLE purchase_orders ADD COLUMN IF NOT EXISTS po_date DATE DEFAULT CURRENT_DATE;
+
+      -- Recreate status constraint for purchase_orders to allow 'cancelled'
+      ALTER TABLE purchase_orders DROP CONSTRAINT IF EXISTS purchase_orders_status_check;
+      ALTER TABLE purchase_orders ADD CONSTRAINT purchase_orders_status_check CHECK (status IN ('generated', 'sent', 'acknowledged', 'completed', 'cancelled'));
+
+      -- Alter invoices
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS vendor_address TEXT;
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS vendor_gstin VARCHAR(50);
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS invoice_date DATE DEFAULT CURRENT_DATE;
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS cgst_amount DECIMAL(14,2) DEFAULT 0.00;
+      ALTER TABLE invoices ADD COLUMN IF NOT EXISTS sgst_amount DECIMAL(14,2) DEFAULT 0.00;
+
+      -- Update old invoice status values
+      UPDATE invoices SET status = 'pending_payment' WHERE status = 'pending';
+
+      -- Alter invoice status default and check constraint
+      ALTER TABLE invoices ALTER COLUMN status SET DEFAULT 'pending_payment';
+      ALTER TABLE invoices DROP CONSTRAINT IF EXISTS invoices_status_check;
+      ALTER TABLE invoices ADD CONSTRAINT invoices_status_check CHECK (status IN ('pending_payment', 'paid', 'overdue', 'cancelled'));
+
+      -- Alter activity_logs
+      ALTER TABLE activity_logs ADD COLUMN IF NOT EXISTS meta JSONB;
+    `;
+    await query(alterSchemaSql);
+    console.log('Database schema alterations executed successfully.');
+
     console.log('All migrations completed successfully!');
   } catch (error) {
     console.error('Error running migrations:', error);

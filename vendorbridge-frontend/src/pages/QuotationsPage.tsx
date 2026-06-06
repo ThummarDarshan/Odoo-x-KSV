@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -14,9 +14,7 @@ import {
   Clock,
   XCircle,
   Send,
-  AlertCircle,
   TrendingUp,
-  IndianRupee,
 } from 'lucide-react';
 import MainLayout from '../components/Layout/MainLayout';
 import { useAuthStore } from '../store/auth.store';
@@ -77,18 +75,9 @@ const STATUS_ICONS: Record<string, React.ElementType> = {
   approved: CheckCircle2,
 };
 
-const mockQuotations: Quotation[] = [
-  { id: 'q1', rfq_id: 'rfq1', vendor_id: 'v1', status: 'submitted', subtotal: '145000', gst_percentage: '18', gst_amount: '26100', grand_total: '171100', delivery_days: 14, payment_terms: 'Net 30', notes: 'Bulk discount applied', created_at: '2026-06-02T09:00:00Z', updated_at: '2026-06-02T10:00:00Z', vendor_name: 'TechMart Solutions', rfq_title: 'Office Furniture Procurement Q2', rfq_number: 'RFQ-2026-0001' },
-  { id: 'q2', rfq_id: 'rfq1', vendor_id: 'v2', status: 'draft', subtotal: '138000', gst_percentage: '18', gst_amount: '24840', grand_total: '162840', delivery_days: 21, payment_terms: 'Net 15', notes: null, created_at: '2026-06-03T11:00:00Z', updated_at: '2026-06-03T11:00:00Z', vendor_name: 'Apex Supplies Ltd', rfq_title: 'Office Furniture Procurement Q2', rfq_number: 'RFQ-2026-0001' },
-  { id: 'q3', rfq_id: 'rfq2', vendor_id: 'v3', status: 'selected', subtotal: '238500', gst_percentage: '18', gst_amount: '42930', grand_total: '281430', delivery_days: 7, payment_terms: 'Net 45', notes: 'Premium support included', created_at: '2026-06-04T14:00:00Z', updated_at: '2026-06-04T16:00:00Z', vendor_name: 'GlobalTech Inc', rfq_title: 'Developer Laptops Upgrade', rfq_number: 'RFQ-2026-0002' },
-  { id: 'q4', rfq_id: 'rfq3', vendor_id: 'v1', status: 'rejected', subtotal: '52000', gst_percentage: '18', gst_amount: '9360', grand_total: '61360', delivery_days: 30, payment_terms: 'Net 30', notes: null, created_at: '2026-06-01T08:00:00Z', updated_at: '2026-06-05T09:00:00Z', vendor_name: 'TechMart Solutions', rfq_title: 'Warehouse Logistics Service', rfq_number: 'RFQ-2026-0003' },
-];
 
 const formatCurrency = (val: number | string) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(val));
-
-const formatDate = (dateStr: string) =>
-  new Date(dateStr).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
 
 const StatusBadge = ({ status }: { status: string }) => {
   const Icon = STATUS_ICONS[status] || Clock;
@@ -112,7 +101,7 @@ export default function QuotationsPage() {
   const [quotations, setQuotations] = useState<Quotation[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [, setIsError] = useState(false);
 
   const [selectedQ, setSelectedQ] = useState<Quotation | null>(null);
   const [qDetail, setQDetail] = useState<QuotationDetail | null>(null);
@@ -168,23 +157,14 @@ export default function QuotationsPage() {
     loadDetail();
   }, [selectedQ]);
 
-  const displayQuotations = isError || (!loading && quotations.length === 0)
-    ? mockQuotations.filter(q => {
-        const matchSearch = !searchQuery ||
-          (q.rfq_number || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (q.rfq_title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (q.vendor_name || '').toLowerCase().includes(searchQuery.toLowerCase());
-        const matchStatus = statusFilter === 'all' || q.status === statusFilter;
-        return matchSearch && matchStatus;
-      })
-    : quotations.filter(q =>
-        !searchQuery ||
-        (q.rfq_number || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (q.rfq_title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (q.vendor_name || '').toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const displayQuotations = quotations.filter(q =>
+    !searchQuery ||
+    (q.rfq_number || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (q.rfq_title || '').toLowerCase().includes(searchQuery.toLowerCase()) ||
+    (q.vendor_name || '').toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const totalCount = isError ? displayQuotations.length : total;
+  const totalCount = total;
   const totalPages = Math.ceil(totalCount / limit) || 1;
 
   const summaryStats = [

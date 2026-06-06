@@ -85,14 +85,7 @@ export default function CreateRFQPage() {
         }
       } catch (err: any) {
         console.error('Failed to load vendors', err);
-        // Fallback mock vendors for local preview/robustness
-        setVendors([
-          { id: 'v1', name: 'Global Tech Corp', category: 'IT', gst_number: '27AABC1234D1Z5', status: 'active' },
-          { id: 'v2', name: 'Apex Industrial Solutions', category: 'Furniture', gst_number: '27AABC5678D2Z4', status: 'active' },
-          { id: 'v3', name: 'Zeta Office Systems', category: 'Office Supplies', gst_number: '27AABC3456D4Z2', status: 'active' },
-          { id: 'v4', name: 'Infra Supplies Pvt ltd', category: 'Raw Materials', gst_number: '27AABC7890D5Z1', status: 'active' },
-          { id: 'v5', name: 'Techcore LTD', category: 'IT', gst_number: '27AABC1111E2Z9', status: 'active' }
-        ]);
+        setVendors([]);
       } finally {
         setLoadingVendors(false);
       }

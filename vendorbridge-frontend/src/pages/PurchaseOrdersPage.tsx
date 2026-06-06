@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Search,
@@ -9,18 +9,14 @@ import {
   Eye,
   FileText,
   Building2,
-  Calendar,
   Package,
   Receipt,
   CheckCircle2,
   Clock,
-  TrendingUp,
   ExternalLink,
   Hash,
-  IndianRupee,
 } from 'lucide-react';
 import MainLayout from '../components/Layout/MainLayout';
-import { useAuthStore } from '../store/auth.store';
 import api from '../lib/axios';
 import toast from 'react-hot-toast';
 
@@ -97,11 +93,7 @@ const INVOICE_STATUS_STYLES: Record<string, string> = {
   overdue: 'bg-red-500/10 text-red-400 border-red-500/20',
 };
 
-const mockPOs: PurchaseOrder[] = [
-  { id: 'po1', po_number: 'PO-2026-0001', subtotal: '145000', grand_total: '171100', status: 'generated', po_date: '2026-06-01', created_at: '2026-06-01T08:30:00Z', vendor_name: 'TechMart Solutions', rfq_title: 'Office Furniture Procurement Q2' },
-  { id: 'po2', po_number: 'PO-2026-0002', subtotal: '238500', grand_total: '281430', status: 'acknowledged', po_date: '2026-06-03', created_at: '2026-06-03T11:00:00Z', vendor_name: 'Apex Supplies Ltd', rfq_title: 'Developer Laptops Upgrade' },
-  { id: 'po3', po_number: 'PO-2026-0003', subtotal: '52000', grand_total: '61360', status: 'completed', po_date: '2026-05-25', created_at: '2026-05-25T14:00:00Z', vendor_name: 'GreenBridge Logistics', rfq_title: 'Warehouse Logistics Service' },
-];
+
 
 const formatCurrency = (val: number | string) =>
   new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(Number(val));
@@ -116,7 +108,6 @@ const StatusBadge = ({ status }: { status: string }) => (
 );
 
 export default function PurchaseOrdersPage() {
-  const { user } = useAuthStore();
   const navigate = useNavigate();
 
   const [searchQuery, setSearchQuery] = useState('');
@@ -127,7 +118,7 @@ export default function PurchaseOrdersPage() {
   const [pos, setPOs] = useState<PurchaseOrder[]>([]);
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
-  const [isError, setIsError] = useState(false);
+  const [, setIsError] = useState(false);
 
   const [selectedPO, setSelectedPO] = useState<PurchaseOrder | null>(null);
   const [poDetail, setPODetail] = useState<PODetail | null>(null);
@@ -180,26 +171,17 @@ export default function PurchaseOrdersPage() {
     loadDetail();
   }, [selectedPO]);
 
-  const displayPOs = isError || (!loading && pos.length === 0)
-    ? mockPOs.filter(p => {
-        const matchSearch = !searchQuery ||
-          p.po_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.vendor_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          p.rfq_title.toLowerCase().includes(searchQuery.toLowerCase());
-        const matchStatus = statusFilter === 'all' || p.status === statusFilter;
-        return matchSearch && matchStatus;
-      })
-    : pos.filter(p =>
-        !searchQuery ||
-        p.po_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.vendor_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.rfq_title.toLowerCase().includes(searchQuery.toLowerCase())
-      );
+  const displayPOs = pos.filter(p =>
+    !searchQuery ||
+    p.po_number.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.vendor_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    p.rfq_title.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
-  const totalPages = Math.ceil((isError ? displayPOs.length : total) / limit) || 1;
+  const totalPages = Math.ceil(total / limit) || 1;
 
   const summaryStats = [
-    { label: 'Total POs', value: isError ? mockPOs.length : total, icon: FileText, color: 'text-blue-400' },
+    { label: 'Total POs', value: total, icon: FileText, color: 'text-blue-400' },
     { label: 'Generated', value: displayPOs.filter(p => p.status === 'generated').length, icon: Package, color: 'text-indigo-400' },
     { label: 'Acknowledged', value: displayPOs.filter(p => p.status === 'acknowledged').length, icon: Clock, color: 'text-amber-400' },
     { label: 'Completed', value: displayPOs.filter(p => p.status === 'completed').length, icon: CheckCircle2, color: 'text-emerald-400' },

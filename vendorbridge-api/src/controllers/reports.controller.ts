@@ -39,6 +39,18 @@ export const getSummary = async (req: Request, res: Response, next: NextFunction
     );
     const overdueInvoices = overdueRes.rows[0].count;
 
+    // 5. Active RFQs (COUNT from rfqs WHERE status = 'published')
+    const rfqsRes = await query(
+      `SELECT COUNT(*)::int AS count FROM rfqs WHERE status = 'published'`
+    );
+    const activeRfqs = rfqsRes.rows[0].count;
+
+    // 6. Pending Approvals (COUNT from approvals WHERE status = 'pending')
+    const approvalsRes = await query(
+      `SELECT COUNT(*)::int AS count FROM approvals WHERE status = 'pending'`
+    );
+    const pendingApprovals = approvalsRes.rows[0].count;
+
     // Get current month name
     const monthNames = [
       'January', 'February', 'March', 'April', 'May', 'June',
@@ -54,6 +66,8 @@ export const getSummary = async (req: Request, res: Response, next: NextFunction
         active_vendors: activeVendors,
         po_fulfillment_rate: poFulfillmentRate,
         overdue_invoices: overdueInvoices,
+        active_rfqs: activeRfqs,
+        pending_approvals: pendingApprovals,
         month: monthStr,
       },
     });

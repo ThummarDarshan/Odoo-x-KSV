@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { 
   BarChart, 
   Bar, 
@@ -10,14 +10,12 @@ import {
   Cell
 } from 'recharts';
 import { 
-  ArrowRight, 
   Download, 
   TrendingUp, 
   Users, 
   ShoppingCart, 
   AlertCircle,
   Calendar,
-  Building2,
   Trophy,
   Loader2,
   AlertTriangle
@@ -76,15 +74,8 @@ export default function ReportsPage() {
             setSelectedMonth(summaryRes.data.data.month);
           }
         } else {
-          // Mock summary for vendors who can't call this backend endpoint
-          setSummary({
-            total_spend: 1240000,
-            active_vendors: 24,
-            po_fulfillment_rate: 94,
-            overdue_invoices: 2,
-            month: 'June 2026'
-          });
-          setSelectedMonth('June 2026');
+          setSummary(null);
+          setSelectedMonth('');
         }
 
         // 2. Fetch Monthly Spend
@@ -195,7 +186,7 @@ export default function ReportsPage() {
       {!isAuthorized && (
         <div className="mb-6 p-4 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 text-xs flex items-center gap-3">
           <AlertTriangle className="w-5 h-5 flex-shrink-0" />
-          <span>You are logged in as a Vendor. Displaying mock billing statistics as standard database ledger tables are restricted to Procurement Officers and Managers.</span>
+          <span>You are logged in as a Vendor. Billing summary and ledger stats are restricted to Procurement Officers and Managers.</span>
         </div>
       )}
 

@@ -94,20 +94,20 @@ export default function DashboardPage() {
 
   // Fallback data mapping
   const summary = summaryRes?.data || {
-    total_spend: 230000,
-    active_vendors: 24,
-    po_fulfillment_rate: 92,
-    overdue_invoices: 3,
-    active_rfqs: 12,
-    pending_approvals: 5,
-    month: 'June 2026'
+    total_spend: 0,
+    active_vendors: 0,
+    po_fulfillment_rate: 0,
+    overdue_invoices: 0,
+    active_rfqs: 0,
+    pending_approvals: 0,
+    month: ''
   };
 
   // Make sure we have numbers or fallback values
-  const activeRFQsCount = summary.active_rfqs ?? 12;
-  const pendingApprovalsCount = summary.pending_approvals ?? 5;
-  const overdueInvoicesCount = summary.overdue_invoices ?? 3;
-  const totalSpendFormatted = formatLakhs(summary.total_spend ?? 230000);
+  const activeRFQsCount = summary.active_rfqs ?? 0;
+  const pendingApprovalsCount = summary.pending_approvals ?? 0;
+  const overdueInvoicesCount = summary.overdue_invoices ?? 0;
+  const totalSpendFormatted = formatLakhs(summary.total_spend ?? 0);
 
   const spendData = spendRes?.data && spendRes.data.length > 0 
     ? spendRes.data.map((item: any) => ({
@@ -115,22 +115,9 @@ export default function DashboardPage() {
         // Ensure values are numbers
         amount: Number(item.amount)
       }))
-    : [
-        { month: 'Jan 2026', amount: 95000 },
-        { month: 'Feb 2026', amount: 110000 },
-        { month: 'Mar 2026', amount: 85000 },
-        { month: 'Apr 2026', amount: 125000 },
-        { month: 'May 2026', amount: 140000 },
-        { month: 'Jun 2026', amount: 230000 }
-      ];
+    : [];
 
-  const purchaseOrders = posRes?.data || [
-    { id: '1', po_number: 'PO-2026-0001', vendor_name: 'Global Tech Corp', grand_total: 45000, status: 'completed' },
-    { id: '2', po_number: 'PO-2026-0002', vendor_name: 'Apex Industrial Solutions', grand_total: 38000, status: 'acknowledged' },
-    { id: '3', po_number: 'PO-2026-0003', vendor_name: 'Nexa Logistics', grand_total: 12000, status: 'sent' },
-    { id: '4', po_number: 'PO-2026-0004', vendor_name: 'Zeta Office Systems', grand_total: 21500, status: 'generated' },
-    { id: '5', po_number: 'PO-2026-0005', vendor_name: 'Vertex Raw Materials', grand_total: 8000, status: 'draft' }
-  ];
+  const purchaseOrders = posRes?.data || [];
 
   return (
     <MainLayout>
@@ -252,7 +239,13 @@ export default function DashboardPage() {
                 ))}
               </div>
             ) : posError ? (
-              <p className="text-xs text-text-secondary py-4 text-center">Failed to load purchase orders. Showing fallbacks.</p>
+              <p className="text-xs text-text-secondary py-4 text-center">Failed to load purchase orders.</p>
+            ) : purchaseOrders.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-10 gap-2">
+                <ShoppingCart className="w-8 h-8 text-white/10" />
+                <p className="text-sm text-text-secondary">No purchase orders yet</p>
+                <p className="text-xs text-white/30">Purchase orders will appear here once generated</p>
+              </div>
             ) : (
               <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
@@ -311,6 +304,12 @@ export default function DashboardPage() {
             <div className="animate-pulse bg-white/5 rounded-xl h-72 w-full"></div>
           ) : spendError ? (
             <p className="text-xs text-text-secondary py-4 text-center">Failed to load monthly spend analytics.</p>
+          ) : spendData.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-72 gap-2">
+              <TrendingUp className="w-8 h-8 text-white/10" />
+              <p className="text-sm text-text-secondary">No spend data available yet</p>
+              <p className="text-xs text-white/30">Data will appear once invoices are created</p>
+            </div>
           ) : (
             <div className="h-72 w-full">
               <ResponsiveContainer width="100%" height="100%">

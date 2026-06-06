@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import MainLayout from '../components/Layout/MainLayout';
 import { useAuthStore } from '../store/auth.store';
 import api from '../lib/axios';
@@ -9,15 +9,11 @@ import {
   Plus, 
   X, 
   Calendar, 
-  FileText, 
-  Check, 
-  AlertCircle, 
   Building2, 
   ChevronLeft, 
   ChevronRight, 
   Loader2, 
   Eye, 
-  ClipboardList,
   Send,
   Trash2,
   BarChart
@@ -55,14 +51,6 @@ const StatusBadge = ({ status }: { status: RFQ['status'] }) => {
   );
 };
 
-// Realistic mock RFQs in case database is empty or server fails
-const mockRFQs: RFQ[] = [
-  { id: 'rfq1', rfq_number: 'RFQ-2026-0001', title: 'Office Furniture Procurement Q2', category: 'Furniture', description: 'Ergonomic chairs and standing desks for the 3rd-floor workspace.', deadline: '2026-06-25T18:00:00.000Z', status: 'published', created_by: 'u1', created_at: '2026-06-01T08:30:00.000Z', updated_at: '2026-06-02T10:15:00.000Z', creator_name: 'Jane Doe', line_items_count: 5, vendor_count: 3 },
-  { id: 'rfq2', rfq_number: 'RFQ-2026-0002', title: 'Developer Laptops Upgrade', category: 'IT', description: 'Procurement of 15 high-performance laptops for engineering teams.', deadline: '2026-06-15T18:00:00.000Z', status: 'draft', created_by: 'u1', created_at: '2026-06-03T11:20:00.000Z', updated_at: '2026-06-03T11:20:00.000Z', creator_name: 'Jane Doe', line_items_count: 3, vendor_count: 2 },
-  { id: 'rfq3', rfq_number: 'RFQ-2026-0003', title: 'Warehouse Logistics Service', category: 'Logistics', description: 'Third-party logistics provider contract for west zone shipping.', deadline: '2026-05-30T18:00:00.000Z', status: 'closed', created_by: 'u2', created_at: '2026-05-10T14:45:00.000Z', updated_at: '2026-05-30T18:00:00.000Z', creator_name: 'Mark Johnson', line_items_count: 2, vendor_count: 4 },
-  { id: 'rfq4', rfq_number: 'RFQ-2026-0004', title: 'Bulk Printing Paper Supplies', category: 'Office Supplies', description: 'Annual supply of eco-friendly A4 printer paper boxes.', deadline: '2026-07-10T18:00:00.000Z', status: 'published', created_by: 'u1', created_at: '2026-06-05T09:00:00.000Z', updated_at: '2026-06-05T09:00:00.000Z', creator_name: 'Jane Doe', line_items_count: 1, vendor_count: 5 },
-  { id: 'rfq5', rfq_number: 'RFQ-2026-0005', title: 'Raw Steel Sheets Procurement', category: 'Raw Materials', description: 'High-grade mild steel sheets for manufacturing unit B.', deadline: '2026-05-20T18:00:00.000Z', status: 'awarded', created_by: 'u2', created_at: '2026-05-01T10:15:00.000Z', updated_at: '2026-05-25T14:00:00.000Z', creator_name: 'Mark Johnson', line_items_count: 4, vendor_count: 3 }
-];
 
 export default function RFQsPage() {
   const queryClient = useQueryClient();
@@ -95,7 +83,7 @@ export default function RFQsPage() {
   }, [searchQuery]);
 
   // Query RFQ List
-  const { data: rfqsData, isLoading, isError } = useQuery({
+  const { data: rfqsData, isLoading } = useQuery({
     queryKey: ['rfqsList', statusFilter, searchTerm, page, vendorIdFilter],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -175,28 +163,17 @@ export default function RFQsPage() {
   });
 
   // Data Merging
-  const isFallback = isError || (!isLoading && (!rfqsData?.data || rfqsData?.data.length === 0));
-  const rfqs = isFallback 
-    ? mockRFQs.filter(r => {
-        const matchesSearch = r.title.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                              r.rfq_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                              r.category.toLowerCase().includes(searchTerm.toLowerCase());
-        const matchesStatus = statusFilter === 'all' || r.status === statusFilter;
-        return matchesSearch && matchesStatus;
-      })
-    : (rfqsData?.data || []);
+  const rfqs: RFQ[] = rfqsData?.data || [];
 
-  const totalRFQs = isFallback ? rfqs.length : (rfqsData?.meta?.total || 0);
+  const totalRFQs = rfqsData?.meta?.total || 0;
   const totalPages = Math.ceil(totalRFQs / limit) || 1;
 
   // Count helper for tabs
   const getStatusCount = (status: string) => {
-    if (isFallback) {
-      if (status === 'all') return mockRFQs.length;
-      return mockRFQs.filter(r => r.status === status).length;
-    }
-    // Simple count on full data (or estimate based on counts if backend provides it)
-    return rfqs.filter(r => status === 'all' || r.status === status).length;
+    // Return live count if backend summary has it, or calculate from the local subset
+    if (status === 'all') return totalRFQs;
+    // Since we page on backend, if we want exact count per tab, we count from loaded list, or if backend returned counts
+    return rfqs.filter((r: RFQ) => r.status === status).length;
   };
 
   return (

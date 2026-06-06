@@ -51,14 +51,7 @@ const StatusBadge = ({ status }: { status: 'active' | 'pending' | 'blocked' }) =
   );
 };
 
-// Realistic mock vendors in case database is empty or server fails
-const mockVendors: Vendor[] = [
-  { id: 'v1', name: 'Global Tech Corp', category: 'IT', gst_number: '27AABC1234D1Z5', contact_name: 'John Smith', contact_phone: '+91 98765 43210', contact_email: 'sales@globaltech.com', address: 'Tech Park, Sector 4, Bangalore, Karnataka', status: 'active', rating: 4.8, created_at: '2026-01-15T08:30:00.000Z' },
-  { id: 'v2', name: 'Apex Industrial Solutions', category: 'Furniture', gst_number: '27AABC5678D2Z4', contact_name: 'David Lee', contact_phone: '+91 99999 88888', contact_email: 'info@apexind.com', address: 'Industrial Area Phase 2, Pune, Maharashtra', status: 'active', rating: 4.5, created_at: '2026-02-20T10:15:00.000Z' },
-  { id: 'v3', name: 'Nexa Logistics', category: 'Logistics', gst_number: '27AABC9012D3Z3', contact_name: 'Sarah Jenkins', contact_phone: '+91 98888 77777', contact_email: 'ops@nexalogistics.com', address: 'Cargo Terminal Road, Mumbai, Maharashtra', status: 'pending', rating: 4.2, created_at: '2026-03-05T14:45:00.000Z' },
-  { id: 'v4', name: 'Zeta Office Systems', category: 'Office Supplies', gst_number: '27AABC3456D4Z2', contact_name: 'Robert Vance', contact_phone: '+91 97777 66666', contact_email: 'support@zetaoffice.in', address: 'MG Road, Sector 12, Gurugram, Haryana', status: 'active', rating: 4.6, created_at: '2026-04-12T09:00:00.000Z' },
-  { id: 'v5', name: 'Vertex Raw Materials', category: 'Raw Materials', gst_number: '27AABC7890D5Z1', contact_name: 'Elena Rostova', contact_phone: '+91 96666 55555', contact_email: 'elena@vertexrm.com', address: 'Raw Port Junction, Chennai, Tamil Nadu', status: 'blocked', rating: 3.9, created_at: '2026-05-18T11:20:00.000Z' },
-];
+
 
 export default function VendorsPage() {
   const queryClient = useQueryClient();
@@ -121,7 +114,7 @@ export default function VendorsPage() {
   });
 
   // Queries
-  const { data: vendorsData, isLoading, isError } = useQuery({
+  const { data: vendorsData, isLoading } = useQuery({
     queryKey: ['vendorsList', statusFilter, searchTerm, page],
     queryFn: async () => {
       const params = new URLSearchParams();
@@ -255,25 +248,11 @@ export default function VendorsPage() {
 
   const categories = ['IT', 'Furniture', 'Logistics', 'Raw Materials', 'Office Supplies', 'Services'];
 
-  // Data Merging
-  const isFallback = isError || (!isLoading && (!vendorsData?.data || vendorsData?.data.length === 0));
-  const vendors = isFallback ? mockVendors.filter(v => {
-    // Basic local filter for fallback preview
-    const matchesSearch = v.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                          v.gst_number.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                          v.category.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = statusFilter === 'all' || v.status === statusFilter;
-    return matchesSearch && matchesStatus;
-  }) : (vendorsData?.data || []);
-
-  const totalVendors = isFallback ? vendors.length : (vendorsData?.meta?.total || 0);
+  // Live API data only — no fallback mock data
+  const vendors: Vendor[] = vendorsData?.data || [];
+  const totalVendors = vendorsData?.meta?.total || 0;
   const totalPages = Math.ceil(totalVendors / limit) || 1;
-  const statusCounts = isFallback ? {
-    all: mockVendors.length,
-    active: mockVendors.filter(v => v.status === 'active').length,
-    pending: mockVendors.filter(v => v.status === 'pending').length,
-    blocked: mockVendors.filter(v => v.status === 'blocked').length
-  } : (vendorsData?.statusCounts || { all: 0, active: 0, pending: 0, blocked: 0 });
+  const statusCounts = vendorsData?.statusCounts || { all: 0, active: 0, pending: 0, blocked: 0 };
 
   return (
     <MainLayout>
