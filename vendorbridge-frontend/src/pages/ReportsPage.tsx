@@ -127,9 +127,9 @@ export default function ReportsPage() {
     toast.success('Report exported successfully!');
   };
 
-  // Format Lakhs ($1.2L = 120000)
+  // Format Lakhs (₹1.2L = 120000)
   const formatLakhs = (val: number) => {
-    return `${(val / 100000).toFixed(1)}L`;
+    return `₹${(val / 100000).toFixed(1)}L`;
   };
 
   // Format Currency

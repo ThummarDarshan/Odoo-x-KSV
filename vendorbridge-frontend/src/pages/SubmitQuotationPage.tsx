@@ -5,7 +5,7 @@ import {
   Building2, 
   AlertCircle, 
   Calendar, 
-  DollarSign, 
+  IndianRupee, 
   Save, 
   Send,
   Loader2,
@@ -66,6 +66,7 @@ export default function SubmitQuotationPage() {
   // API State
   const [rfq, setRfq] = useState<RFQDetail | null>(null);
   const [loadingRFQ, setLoadingRFQ] = useState(true);
+  const [loadingQuotation, setLoadingQuotation] = useState(false);
   const [myVendors, setMyVendors] = useState<AssignedVendor[]>([]);
   const [selectedVendor, setSelectedVendor] = useState<AssignedVendor | null>(null);
 
@@ -124,6 +125,7 @@ export default function SubmitQuotationPage() {
     async function loadQuotation() {
       if (!rfqId || !selectedVendor) return;
       
+      setLoadingQuotation(true);
       // Initialize form items from RFQ lines in case no draft exists
       const initialLines = (rfq?.line_items || []).map(item => ({
         rfq_line_item_id: item.id,
@@ -139,28 +141,33 @@ export default function SubmitQuotationPage() {
         const res = await api.get(`/quotations?rfq_id=${rfqId}`);
         if (res.data && res.data.success && res.data.data.length > 0) {
           // Find if there is a quotation matching this selected vendor
-          const existing = res.data.data.find((q: any) => q.vendor_id === selectedVendor.id);
-          if (existing) {
-            setQuotationId(existing.id);
-            setQuotationStatus(existing.status);
-            setGstPercentage(parseFloat(existing.gst_percentage) || 18);
-            setPaymentTerms(existing.payment_terms || '');
-            setNotes(existing.notes || '');
+          const existingSummary = res.data.data.find((q: any) => q.vendor_id === selectedVendor.id);
+          if (existingSummary) {
+            // Fetch full details with line items
+            const detailRes = await api.get(`/quotations/${existingSummary.id}`);
+            if (detailRes.data && detailRes.data.success) {
+              const existing = detailRes.data.data;
+              setQuotationId(existing.id);
+              setQuotationStatus(existing.status);
+              setGstPercentage(parseFloat(existing.gst_percentage) || 18);
+              setPaymentTerms(existing.payment_terms || '');
+              setNotes(existing.notes || '');
 
-            // Map line items
-            const mappedLines = (rfq?.line_items || []).map(rfqItem => {
-              const matchedLine = (existing.line_items || []).find((l: any) => l.rfq_line_item_id === rfqItem.id);
-              return {
-                rfq_line_item_id: rfqItem.id,
-                item_name: rfqItem.item_name,
-                quantity: rfqItem.quantity,
-                unit: rfqItem.unit,
-                unit_price: matchedLine ? parseFloat(matchedLine.unit_price) : '',
-                delivery_days: matchedLine && matchedLine.delivery_days !== null ? matchedLine.delivery_days : ''
-              };
-            });
-            setLineItems(mappedLines);
-            return;
+              // Map line items
+              const mappedLines = (rfq?.line_items || []).map(rfqItem => {
+                const matchedLine = (existing.line_items || []).find((l: any) => l.rfq_line_item_id === rfqItem.id);
+                return {
+                  rfq_line_item_id: rfqItem.id,
+                  item_name: rfqItem.item_name,
+                  quantity: rfqItem.quantity,
+                  unit: rfqItem.unit,
+                  unit_price: matchedLine ? parseFloat(matchedLine.unit_price) : '',
+                  delivery_days: matchedLine && matchedLine.delivery_days !== null ? matchedLine.delivery_days : ''
+                };
+              });
+              setLineItems(mappedLines);
+              return;
+            }
           }
         }
 
@@ -177,6 +184,8 @@ export default function SubmitQuotationPage() {
         setQuotationId(null);
         setQuotationStatus('new');
         setLineItems(initialLines);
+      } finally {
+        setLoadingQuotation(false);
       }
     }
     loadQuotation();
@@ -354,10 +363,12 @@ export default function SubmitQuotationPage() {
         </div>
       </div>
 
-      {loadingRFQ ? (
+      {loadingRFQ || loadingQuotation ? (
         <div className="flex flex-col items-center justify-center py-20">
           <Loader2 className="w-10 h-10 text-brand-green animate-spin mb-4" />
-          <p className="text-sm text-text-secondary">Loading RFQ specifications...</p>
+          <p className="text-sm text-text-secondary">
+            {loadingRFQ ? "Loading RFQ specifications..." : "Loading vendor quotation draft..."}
+          </p>
         </div>
       ) : !rfq ? (
         <div className="glass-card rounded-xl border border-red-500/20 p-8 text-center">
@@ -503,7 +514,7 @@ export default function SubmitQuotationPage() {
                       </td>
                       <td className="py-4 px-4">
                         <div className="relative flex justify-end">
-                          <DollarSign className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
+                          <IndianRupee className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-secondary pointer-events-none" />
                           <input
                             type="number"
                             min={0.01}

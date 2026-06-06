@@ -35,41 +35,48 @@ export default function DashboardPage() {
 
   // Queries
   const { data: summaryRes, isLoading: loadingSummary, error: summaryError } = useQuery({
-    queryKey: ['dashboardSummary'],
+    queryKey: ['dashboardSummary', user?.id],
     queryFn: async () => {
       const res = await api.get('/reports/summary');
       return res.data;
     },
-    enabled: !!user && user.role !== 'vendor'
+    enabled: !!user && user.role !== 'vendor',
+    gcTime: 0,
+    staleTime: 0
   });
 
   const { data: spendRes, isLoading: loadingSpend, error: spendError } = useQuery({
-    queryKey: ['dashboardSpend'],
+    queryKey: ['dashboardSpend', user?.id],
     queryFn: async () => {
       const res = await api.get('/reports/monthly-spend');
       return res.data;
     },
-    enabled: !!user && user.role !== 'vendor'
+    enabled: !!user && user.role !== 'vendor',
+    gcTime: 0,
+    staleTime: 0
   });
 
   const { data: posRes, isLoading: loadingPos, error: posError } = useQuery({
-    queryKey: ['dashboardPOs'],
+    queryKey: ['dashboardPOs', user?.id],
     queryFn: async () => {
       const res = await api.get('/purchase-orders?limit=5');
       return res.data;
-    }
+    },
+    enabled: !!user,
+    gcTime: 0,
+    staleTime: 0
   });
 
   // Formatting helpers
   const formatLakhs = (val: number) => {
-    // 1 Lakh = 100,000. E.g. 230000 -> $2.3L
-    return `$${(val / 100000).toFixed(1)}L`;
+    // 1 Lakh = 100,000. E.g. 230000 -> ₹2.3L
+    return `₹${(val / 100000).toFixed(1)}L`;
   };
 
   const formatCurrency = (val: number) => {
-    return new Intl.NumberFormat('en-US', {
+    return new Intl.NumberFormat('en-IN', {
       style: 'currency',
-      currency: 'USD',
+      currency: 'INR',
       maximumFractionDigits: 0
     }).format(val);
   };
@@ -77,25 +84,27 @@ export default function DashboardPage() {
   // Status badges formatter
   const getStatusBadge = (status: string) => {
     const norm = status.toLowerCase();
-    if (norm === 'completed' || norm === 'approved') {
-      return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border status-success">
-          Approved
-        </span>
-      );
-    } else if (norm === 'generated' || norm === 'sent' || norm === 'acknowledged' || norm === 'pending') {
-      return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border status-warning">
-          Pending
-        </span>
-      );
-    } else {
-      return (
-        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border status-muted">
-          Draft
-        </span>
-      );
+    let borderClass = 'bg-white/5 text-white border-white/10';
+    
+    if (norm === 'generated') {
+      borderClass = 'bg-blue-500/10 text-blue-400 border-blue-500/20';
+    } else if (norm === 'sent') {
+      borderClass = 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20';
+    } else if (norm === 'acknowledged') {
+      borderClass = 'bg-amber-500/10 text-amber-400 border-amber-500/20';
+    } else if (norm === 'completed' || norm === 'approved') {
+      borderClass = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20';
+    } else if (norm === 'cancelled' || norm === 'rejected') {
+      borderClass = 'bg-red-500/10 text-red-400 border-red-500/20';
     }
+    
+    const displayText = norm === 'completed' ? 'Completed' : norm === 'approved' ? 'Approved' : status.replace('_', ' ');
+
+    return (
+      <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold border capitalize ${borderClass}`}>
+        {displayText}
+      </span>
+    );
   };
 
   // Fallback data mapping
@@ -310,7 +319,7 @@ export default function DashboardPage() {
               <h2 className="text-base font-bold text-text-primary flex items-center gap-2">
                 <TrendingUp className="w-5 h-5 text-brand-green" /> Spending Trend
               </h2>
-              <span className="text-xs text-text-secondary">Amount in Lakhs ($)</span>
+              <span className="text-xs text-text-secondary">Amount in Lakhs (₹)</span>
             </div>
 
             {loadingSpend ? (
